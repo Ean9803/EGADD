@@ -7,6 +7,7 @@ Digital
 Diagrams
 
 Fall 2023
+GITHUB Code: https://github.com/Ean9803/Egadd
 
 It is intended to be used as an educational tool for simulating logic diagrams in a 3D environment.
 

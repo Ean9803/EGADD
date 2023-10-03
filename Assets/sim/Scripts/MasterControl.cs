@@ -178,7 +178,7 @@ public class MasterControl : MonoBehaviour
         if (!File.Exists(Application.dataPath + "/HELP_FILES/DefaultHelp.txt"))
         {
             File.WriteAllText(Application.dataPath + "/HELP_FILES/DefaultHelp.txt", "E.G.A.D.D made by Ian R. Poll stands for \r\nElectronic\r\nGraphical\r\nApplication\r\n\t" +
-                "for\r\nDigital\r\nDiagrams\r\n\r\nFall 2023\r\n\r\nIt is intended to be used as an educational tool for simulating logic diagrams in a 3D environment.\r\n\r\n" +
+                "for\r\nDigital\r\nDiagrams\r\n\r\nFall 2023\r\n\r\nGITHUB Code: https://github.com/Ean9803/Egadd\r\nIt is intended to be used as an educational tool for simulating logic diagrams in a 3D environment.\r\n\r\n" +
                 "On start up, a start menu will pop up, you can ignore it and close the popup by slecting the upper right 'X' in the popup. Within the popup are two lists, list" +
                 " one labled \"Samples\" are folders contained in the EGADD_FILES/Samples folder, this will always show folders located in that directory. The second list contains" +
                 " the last 10 folders the user previously saved or loaded.\r\n\r\nThe folder labled \"temp\" is the default folder that opens up and has its contents erased when" +
