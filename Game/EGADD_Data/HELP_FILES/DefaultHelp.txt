@@ -1,0 +1,79 @@
+E.G.A.D.D made by Ian R. Poll stands for 
+Electronic
+Graphical
+Application
+	for
+Digital
+Diagrams
+
+Fall 2023
+
+It is intended to be used as an educational tool for simulating logic diagrams in a 3D environment.
+
+On start up, a start menu will pop up, you can ignore it and close the popup by slecting the upper right 'X' in the popup. Within the popup are two lists, list one labled "Samples" are folders contained in the EGADD_FILES/Samples folder, this will always show folders located in that directory. The second list contains the last 10 folders the user previously saved or loaded.
+
+The folder labled "temp" is the default folder that opens up and has its contents erased when the EGADD application is started.
+
+Located on the upper left side of the screen is the select menu list, here the user is able to add gates, create gates, save, load, export, analysis, ... on the current board.
+
+The options are listed from top to bottom:
+-File
+-Handle Control
+-Gates
+-Properties
+-Camera
+-Technologic
+
+-File
+In the file menu, the user is able to load in new files or save the current file in edit as well as export to the .sdl format (when possible)
+EGADD is capable to import .egadd files and .sdl files
+The difference between .egadd and .sdl files are to components that are able to be stated in each file.
+The .sdl file has the basic logic components and connections so that the file can be ran by sdl.h to run logic, .egadd files have additional capabilites by being able to reference other files as logic gates, the other files can also be .sdl files as well as .egadd files. When a file is refrenced in a .egadd file EGADD will "pack up" the refrenced file into an IC gate and will contain the logic of said file inside. The maximum depth that files can be referenced is capped at 100 meaning that if someone were to have a .egadd file reference itself, EGADD will only build the logic 100 times before it terminates by creating a lightbulb instead.
+
+New EGADD components:
+-Lightbulb
+-Switch
+-IC
+
+Lightbulb - a lightbulb turns on/off when a positive signal is recived and spits out the same input to its ouptut pins. When a lightbulb is contained in an IC, and the IC is double selected, the IC will create a unit square and place all surface lightbulbs in their 3D percentage position. The percentage position is determined by how long and wide the IC is and how far up the lightbulb is relative to the max height. IC with IC inside which also have bulbs inside will not be displayed, so if an IC has 2 bulbs and an IC with 10 bulbs inside of it, only the 2 bulbs will be shown, and if you open the IC with the 2 bulbs, the IC with 10 bulbs can be displayed.
+
+Switch - a switch is able to be interacted by the user for manual control by double selecting it to toggle it on/off. The two input pins are used to turn on/off the switch, once a switch is on via the on pin, it will say on until the off pin is high. Switches that have no input connected can be manually controlled.
+
+-IC - ICs as stated before contain additional logic which was created by using an additional .sdl or .egadd file. An IC can have up to 1000 inputs and outputs and a minimum of 1 input and 1 output. An IC size does not affect how the IC is scaled when inside a logic circuit, the scale is determined by the maximum number of pins.
+
+Saving a node - (Nodes and Gates will be used interchangeably) This saves the current node you are editing
+Exit to [] - backs out to the previously edited node
+Import SDL - Opens a file explorer to select a .sdl file, you can also import a .egadd file as well
+
+Export SDL - Opens a file explorer to save a file, an exported file will be a .sdl if no new EGADD components are used, if they are used then a .egadd file will be created in its place. If ICs are used then they are expaneded in the exported file, so if your node you are exporting has ICs, as long as the IC don't have EGADD components, an .sdl file will be made that has all the connections made, turing a multiple file .egadd collection to a ONE file .sdl script. You can import the newly made .sdl or .egadd file, but remember the nodes will be displayed in the same position they were when in the IC, so expect some or a lot of overlapped nodes. Auto sort logic in the properties menu will do its best to place the gates in a sensible place
+
+Save Collection - Saves all nodes listed in Gates in a folder with a .sdl2 postname
+Save As Collection - Opens a file explorer to save the collection - A collection is saved as a folder that contains all gates used in the current collection
+Load Collection - Opens a file explorer to open a folder, NOT a file, the folder does not hae to have a ".sdl2" ending, I just put that so the user would be ablt to tell if the files contained were created by EGADD
+
+Help - This is how you got here, there is the quick help and the long help, the long help can be modified by editing or adding files in the EGADD_HELP folder, all file's contents are displayed here
+
+Exit - Quits EGADD
+
+Handle Control - Toggles between controling node position or node rotation
+
+Properties - List the properties of the currenly selected node and the logic board properites, when a pin is selected, the user can force a pin on or off and this is part of the .sdl system so it won't affect the export file extension. The Auto sort logic button located at the bottom of the properites menu will place logic gates in order by how many gates are connected in series to the input pins and by how many gates have the same depth. The board properties controls how big the board is in the X and Y (technically Z) direction between 15 and 70 units and how many IO pins.
+
+Camera - Displays the controls for navigating in the current camera mode, the default is perspective, but the user can toggle ortho on and the camera will be forced to look down at the board like a 2D display, the Arrow on the logic board signals where the forward direction is and what side the output is on.
+
+Technologic - The user is able to modify the current file opened and compile it using the lightning button at the top, the output is displayed here if there is any errors. In the analysis tab, the current gate opened is tested against every binary combination on the input and the output result is displayed. You can start/pause or restart the analysis using the control buttons below the tab select buttons
+
+How to interact - 
+When in the Gate menu, selecting on a gate will spawn the gate at the center of the board, here the user is able to change properites of the selected gate in the properites menu. A gate can be seen in three parts, the body, the input pins, and the output pins. The body, when selected will show the properties of the gate, here you can change the input amount (if the gate allows) and the nickname given to the gate, this attribute will be saved in the .sdl/.egadd file. The input pins, when selected will show if the pin can be forced on or off and the stats of the pin, if a pin is force on/off, the pin will not accept any connections from any output pins. The output pin, when selected, doesn't have any modifyable data, so if you want to negate a pin just place a NOT gate in sequence.
+
+Making connections - 
+When a pin, that is not forced to a state, is double selected, a connection is able to be made to an opposite pin type. Input pins are represented as ball joints and output pins as socket joints. A connection to the same type of pin is not allowed and will cancel the connection. When a connection is ablt to be made, a wire will be made connecting the pin selected to the mouse cursor. When the user selects a pin of opposite type with their mouse cursor a connection will be formed and a wire will be shown connecting the previously selected pin and the selected pin. Pins can have more than one connection on the same pin. Pins can also be connected to their own gate, but don't think you can make the gate work like that, I made it so no infinite loops can be made sucker!
+
+IO Pins -
+Located on opposite ends of the board are the IO pins. The input pins have a downward arrow and the outputs have an uppward arrow. Output pins cannot be manualy controlled, but inputs pins can be toggled, similar to the switch, when double selected. When an IO pin is on, the arrow will be animated, spinning and occilating up and down. Making a connection is the same as connecting gates to each other, select the pin for connection by double selecting it and select the IO pin to connect to, input pins can only connect to input IO and same with output pins and output IO. IO pins cannot initiate a connection so connections between Input IO and Output IO cannot be made by the user, if you want something like that, first "why?", and second, you can put two NOT gates in series connecting the IO pins.
+
+Delete -
+When a gate or wire is selected, the selected item can be deleted by pressing the [delete] button, you cannot delete pins this way, the properties menu controls the pin count.
+
+Creating ICs -
+Located in the Gates menu is an input field to add a new gate, when a user enters a gate name and presses enter, a new file will be made in the collection and will show up in the Gates list. To edit the IC select the "-Edit [GateName]" button to the gate you want to edit. You can edit gates when not in the main gate and EGADD keeps track of your dive, so in the files menu is an option to exit to the previous node you were in. Its best to save the current node first before surfacing.

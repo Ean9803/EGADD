@@ -1,0 +1,12 @@
+
+EGADD files work the same way as .sdl files so if you are expecting to learn .sdl, don't look here, look at the hand out Dr.Hanna gave to you.
+
+EGADD files add exra infomation about the gates by hiding it in the comments. Any comment that has $INFO: or $$NODEDATA: has information about the gate properties that EGADD looks at. Its formated in JSON so if you want to edit the data, be carefule not to make errors. If you want to "Reset" the gate properties, simply erase the comment and EGADD will generate a new one.
+
+What about my comments?
+If your comments are not in the same line as the data or comments that EGADD is using, then EGADD will work around and preserve your comments. If they are in the same line, expect them to be overwritten or mixed up somewhere else.
+
+What if I want to reference a file in a .egadd file?
+Instead of putting the Gate name [AND | OR | XOR | NOT], put the file name instead, you can also put the extension of the file if you want to be specific.
+
+Other than that .egadd works similar to .sdl

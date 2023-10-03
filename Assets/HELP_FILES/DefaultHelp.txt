@@ -1,0 +1,8 @@
+E.G.A.D.D made by Ian R. Poll stands for 
+Electronic
+Graphical
+Application
+	for
+Digital
+Diagrams
+It is intended to be used as an educational tool for simulating logic diagrams in a 3D environment.

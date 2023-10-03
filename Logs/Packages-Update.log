@@ -1,0 +1,11 @@
+
+=== Thu Sep  7 12:16:47 2023
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were added:
+  com.unity.ai.navigation@1.1.1
+The following packages were updated:
+  com.unity.inputsystem from version 1.4.3 to 1.4.4
+  com.unity.recorder from version 3.0.3 to 4.0.0
