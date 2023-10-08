@@ -3,6 +3,7 @@ using UnityEngine;
 using RuntimeHandle;
 using UnityEngine.InputSystem;
 using TMPro;
+using System.IO;
 
 public class UI : MonoBehaviour
 {
@@ -631,12 +632,29 @@ public class UI : MonoBehaviour
                 {
                     Elect.OutputTechnoPanel.text += item;
                 }
+                UpdateGateList();
             });
             AddItem("-EDIT: " + item.Name + item.Extension, (GateItem Item, UI ui) =>
             {
                 Elect.OpenNode(item.Name + item.Extension);
                 UpdateGateList();
             });
+            List<string> Refs = new List<string>();
+            if (!item.Name.Equals("MAIN") && !Lator.isRefed(item, out Refs))
+            {
+                AddItem("-DELETE: " + item.Name + item.Extension, (GateItem Item, UI ui) =>
+                {
+                    Lator.RemoveNode(item);
+                    UpdateGateList();
+                });
+            }
+            else
+            {
+                foreach (var nodeName in Refs)
+                {
+                    AddItem("-" + item.Name + " REF BY: " + nodeName, null);
+                }
+            }
         }
     }
 

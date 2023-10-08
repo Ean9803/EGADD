@@ -5,6 +5,8 @@ using SimpleFileBrowser;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using System.Runtime.Remoting.Messaging;
+using System.Linq.Expressions;
 
 public class Translator : MonoBehaviour
 {
@@ -26,10 +28,95 @@ public class Translator : MonoBehaviour
         public string Name;
         public string Extension;
         public string Contents;
+        public string PathToFile;
         public Translator Lator;
 
         enum Section { NONE, INIT, COMPONENTs, ALIASEs, CONNECTIONs }
         enum Creation { GATE, INPUTS, NAME }
+
+        public List<string> FileReferences()
+        {
+            string[] Lines = Contents.Split('\n');
+            Section Group = Section.NONE;
+            List<string> RefFiles = new List<string>();
+            for (int i = 0; i < Lines.Length; i++)
+            {
+                if (string.IsNullOrEmpty(Lines[i]))
+                    continue;
+                Lines[i] = Lines[i].Trim();
+                if (Lines[i].ToUpper().Equals("$$NODEDATA"))
+                {
+                    Group = Section.INIT;
+                }
+                else if (Lines[i].ToUpper().Equals("COMPONENTS"))
+                {
+                    Group = Section.COMPONENTs;
+                }
+                else if (Lines[i].ToUpper().Equals("ALIASES"))
+                {
+                    break;
+                }
+                else if (Lines[i].ToUpper().Equals("CONNECTIONS"))
+                {
+                    break;
+                }
+                else if (Lines[i].ToUpper().Equals("END"))
+                {
+                    break;
+                }
+                else
+                {
+                    switch (Group)
+                    {
+                        case Section.COMPONENTs:
+                            if (!CreateProfile(Lines[i], out Logic.HeaderNode GateProf))
+                            {
+                                if (!Lines[i].StartsWith('$') && Lines[i].Length > 0)
+                                {
+                                    string LogicName = "";
+                                    Creation Stage = Creation.GATE;
+
+                                    for (int c = 0; c < Lines[i].Length; c++)
+                                    {
+                                        if (Lines[i][c] == '*' || char.IsWhiteSpace(Lines[i][c]))
+                                        {
+                                            switch (LogicName)
+                                            {
+                                                case "NOT":
+                                                case "AND":
+                                                case "OR":
+                                                case "XOR":
+                                                case "LIGHT":
+                                                case "SWITCH":
+                                                    break;
+                                                default:
+                                                    RefFiles.Add(LogicName);
+                                                    break;
+                                            }
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            switch (Stage)
+                                            {
+                                                case Creation.GATE:
+                                                    LogicName += Lines[i][c];
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            return RefFiles;
+        }
 
         public Node GenerateNode(out List<string> Ers, Logic.HeaderNode Header = null, int Layer = 0)
         {
@@ -374,6 +461,22 @@ public class Translator : MonoBehaviour
         return null;
     }
 
+    public bool isRefed(CustomNode node, out List<string> NodesRefed)
+    {
+        NodesRefed = new List<string>();
+        List<string> Files;
+        foreach (var item in Nodes)
+        {
+            Files = item.Value.FileReferences();
+
+            if (Files.Contains(node.Name) || Files.Contains(node.Name + ".sdl") || Files.Contains(node.Name + FileExtenstion))
+            {
+                NodesRefed.Add(item.Value.Name);
+            }
+        }
+        return NodesRefed.Count != 0;
+    }
+
     public Node GenerateRootNode(string NameNode, out List<string> Ers, Logic.HeaderNode Header = null, int Layer = 0)
     {
         CustomNode n = GetCustom(NameNode, out NameNode, out string ext);
@@ -691,11 +794,53 @@ public class Translator : MonoBehaviour
             if (IsAccepted(Paths[i]))
             {
                 FilePath = Paths[i];
-                File.WriteAllText(ActiveCollectionFolder + Path.GetFileNameWithoutExtension(FilePath) + Path.GetExtension(FilePath), File.ReadAllText(FilePath));
+
+                GrabConnectedFiles(FilePath);
             }
         }
         ReloadFiles();
         BlockInput(false);
+    }
+
+    private void GrabConnectedFiles(string FilePath)
+    {
+        CustomNode NewNode = new CustomNode()
+        {
+            Name = Path.GetFileNameWithoutExtension(FilePath),
+            Contents = File.ReadAllText(FilePath),
+            Extension = Path.GetExtension(FilePath),
+            Lator = this,
+            PathToFile = FilePath
+        };
+
+        List<string> Refs = NewNode.FileReferences();
+        for (int f = 0; f < Refs.Count; f++)
+        {
+            string Name = "";
+
+            if (Refs[f].LastIndexOf('.') != -1)
+            {
+                Refs[f] = Refs[f].Substring(0, Refs[f].LastIndexOf('.'));
+            }
+            Name = Refs[f];
+            string FileCopy = FilePath.Substring(0, FilePath.Length - Path.GetFileName(FilePath).Length) + Name;
+
+            if (File.Exists(FileCopy + ".sdl"))
+            {
+                File.WriteAllText(ActiveCollectionFolder + Name + Path.GetExtension(FilePath), File.ReadAllText(FileCopy + ".sdl"));
+            }
+            else if (File.Exists(FileCopy + FileExtenstion))
+            {
+                GrabConnectedFiles(FileCopy + FileExtenstion);
+            }
+        }
+        string FPath = ActiveCollectionFolder + Path.GetFileNameWithoutExtension(FilePath) + Path.GetExtension(FilePath);
+        if (!File.Exists(FPath))
+            File.WriteAllText(FPath, File.ReadAllText(FilePath));
+        else
+        {
+            File.WriteAllText(ActiveCollectionFolder + Path.GetFileNameWithoutExtension(FilePath) + "_" + Path.GetExtension(FilePath), File.ReadAllText(FilePath));
+        }
     }
 
     public void SaveCurrentNodeAs(string Name)
@@ -778,13 +923,20 @@ public class Translator : MonoBehaviour
                     Name = Path.GetFileNameWithoutExtension(FilePath),
                     Contents = File.ReadAllText(FilePath),
                     Extension = Path.GetExtension(FilePath),
-                    Lator = this
+                    Lator = this,
+                    PathToFile = FilePath
                 };
             }
         }
         BlockInput(false);
         SetInitScreen(false);
         AddToList(ActiveCollectionFolder);
+    }
+
+    public void RemoveNode(CustomNode node)
+    {
+        File.Delete(node.PathToFile);
+        Nodes.Remove(node.PathToFile);
     }
 
     private void Cancel()
