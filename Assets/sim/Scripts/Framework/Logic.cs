@@ -516,7 +516,7 @@ public abstract class Logic
         return JsonConvert.DeserializeObject<HeaderNode>(Data);
     }
 
-    public string GenerateNodeHeaderComment(bool IncludeInput)
+    public string GenerateNodeHeaderComment(bool IncludeInput, bool IncludeGateType)
     {
         int Total = 0;
         List<int> Inputs = new List<int>();
@@ -538,7 +538,7 @@ public abstract class Logic
             Inputs = Inputs,
             Outputs = Outputs,
             Place = Place
-        }) + "\n\t" + GetProfile().GetString("GateType", (0, 0), new string[] { "ERROR" })[0];
+        }) + "\n\t" + (IncludeGateType ? GetProfile().GetString("GateType", (0, 0), new string[] { "ERROR" })[0] : "");
         if (GetProfile().Has("Input", Profile.DataTypes.Int) && IncludeInput)
         {
             Out += "*" + Total;
@@ -579,7 +579,7 @@ public abstract class Logic
             isSDLCompat = false;
         else
             isSDLCompat = true;
-        string Out = GenerateNodeHeaderComment(true);
+        string Out = GenerateNodeHeaderComment(true, true);
         
         string Name = Depth + GetProfile().GetString("Name", (0, 0), new string[] { "ERROR" })[0];
 

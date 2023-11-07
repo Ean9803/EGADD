@@ -27,7 +27,7 @@ public class Cluster : Logic
         }
 
         List<string> PathDown = new List<string>(PostFix);
-        Output[3] = GenerateNodeHeaderComment(false);
+        Output[3] = GenerateNodeHeaderComment(false, false);
         isSDLCompat = true;
         if (Layer < 100)
         {
